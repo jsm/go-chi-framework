@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ${SKIP_GITHOOKS:-0} -ne 0 ]; then
+    exit 0
+fi
+
+make fmt lint vet

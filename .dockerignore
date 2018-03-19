@@ -1,0 +1,11 @@
+docker-compose.yml
+
+.git
+.git/**/*
+
+build
+build/**/*
+
+vendor
+!vendor/vendor.json
+vendor/**/*

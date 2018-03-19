@@ -1,0 +1,48 @@
+version: '3'
+services:
+  pgsql:
+    container_name: pgsql
+    image: postgres:9.6-alpine
+    environment:
+      - POSTGRES_DB=users
+    volumes:
+      - ../../tmp/db/data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  migrate:
+    container_name: migrate
+    build: ./migrations
+    environment:
+      - PG_USERNAME=postgres
+      - PG_HOST=pgsql
+      - PG_PASSWORD=''
+    links:
+      - pgsql
+    volumes:
+      - ./migrations:/src
+  redis:
+    container_name: redis
+    image: redis:3-alpine
+    ports:
+      - 6379:6379
+  commander:
+    container_name: commander
+    image: tenstartups/redis-commander
+    command: --redis-host redis
+    ports:
+      - 6380:8081
+    links:
+      - redis
+  stats:
+    container_name: stats
+    image: graphiteapp/graphite-statsd
+    ports:
+      - 6381:80
+      - 2003-2004:2003-2004
+      - 2023-2024:2023-2024
+      - 8125:8125/udp
+      - 8126:8126
+networks:
+  default:
+    external:
+      name: primordia

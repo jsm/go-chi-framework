@@ -1,0 +1,33 @@
+version: '3'
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: build/api/Dockerfile
+    environment:
+      - APP_ENV=local
+      - PG_USERNAME=postgres
+      - PG_HOST=pgsql
+      - PG_PASSWORD=
+      - MACHINERY_HOST=redis://redis:6379
+    ports:
+      - 8080:8080
+  worker:
+    container_name: worker
+    build:
+      context: .
+      dockerfile: build/worker/Dockerfile
+    environment:
+      - APP_ENV=local
+      - PG_USERNAME=postgres
+      - PG_HOST=pgsql
+      - PG_PASSWORD=
+      - MACHINERY_HOST=redis://redis:6379
+      - NUM_WORKERS=1
+    ports:
+      - 8088:8088
+networks:
+  default:
+    external:
+      name: primordia

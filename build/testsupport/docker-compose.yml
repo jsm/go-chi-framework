@@ -1,0 +1,31 @@
+version: '3'
+services:
+  testpgsql:
+    container_name: testpgsql
+    image: mdillon/postgis:9.6-alpine
+    environment:
+      - POSTGRES_DB=users
+    volumes:
+      - ../support/migrations/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - 15432:5432
+  testmigrate:
+    container_name: testmigrate
+    build: ../support/migrations
+    environment:
+      - PG_USERNAME=postgres
+      - PG_HOST=testpgsql
+      - PG_PASSWORD=''
+    links:
+      - testpgsql
+    volumes:
+      - ../support/migrations:/src
+  testredis:
+    container_name: testredis
+    image: redis:3-alpine
+    ports:
+      - 16379:6379      
+networks:
+  default:
+    external:
+      name: primordia

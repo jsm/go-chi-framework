@@ -1,0 +1,3 @@
+[submodule "build/support/migrations"]
+	path = build/support/migrations
+	url = git@github.com:jsm/go-chi-framework-migrations.git

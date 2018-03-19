@@ -1,0 +1,151 @@
+
+# Gopkg.toml example
+#
+# Refer to https://github.com/golang/dep/blob/master/docs/Gopkg.toml.md
+# for detailed Gopkg.toml documentation.
+#
+# required = ["github.com/user/thing/cmd/thing"]
+# ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
+#
+# [[constraint]]
+#   name = "github.com/user/project"
+#   version = "1.0.0"
+#
+# [[constraint]]
+#   name = "github.com/user/project2"
+#   branch = "dev"
+#   source = "github.com/myfork/project2"
+#
+# [[override]]
+#  name = "github.com/x/y"
+#  version = "2.4.0"
+
+
+[[constraint]]
+  name = "github.com/OneOfOne/xxhash"
+  version = "1.2.1"
+
+[[constraint]]
+  name = "github.com/RichardKnop/machinery"
+  source = "github.com/letshuddleup/machinery"
+  branch = "master"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/aws/aws-sdk-go"
+
+[[constraint]]
+  name = "github.com/getsentry/raven-go"
+  source = "github.com/letshuddleup/raven-go"
+  branch = "master"
+
+[[constraint]]
+  name = "github.com/go-chi/chi"
+  version = "3.3.2"
+
+[[constraint]]
+  name = "github.com/go-chi/cors"
+  version = "1.0.0"
+
+[[constraint]]
+  name = "github.com/go-redis/redis"
+  version = "6.8.2"
+
+[[constraint]]
+  name = "github.com/gosimple/slug"
+  version = "1.1.1"
+
+[[constraint]]
+  branch = "huddle/0.18.0"
+  name = "github.com/graymeta/stow"
+  source = "github.com/letshuddleup/stow"
+
+[[constraint]]
+  name = "github.com/jinzhu/gorm"
+  version = "1.0.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/jsm/mime.go"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/kjk/betterguid"
+
+[[constraint]]
+  name = "github.com/RichardKnop/go-mailchimp"
+  source = "github.com/letshuddleup/go-mailchimp"
+  branch = "subscribe"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/lib/pq"
+
+[[constraint]]
+  name = "github.com/op/go-logging"
+  version = "1.0.0"
+
+[[constraint]]
+  name = "github.com/pkg/errors"
+  version = "0.8.0"
+
+[[constraint]]
+  name = "github.com/rs/xid"
+  version = "1.1.0"
+
+[[constraint]]
+  name = "github.com/satori/go.uuid"
+  version = "1.2.0"
+
+[[constraint]]
+  name = "github.com/stretchr/testify"
+  version = "1.2.0"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/net"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/oauth2"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/text"
+
+[[constraint]]
+  name = "gopkg.in/gographics/imagick.v2"
+  version = "2.5.0"
+
+[[constraint]]
+  name = "gopkg.in/guregu/null.v3"
+  version = "3.3.0"
+
+[[constraint]]
+  branch = "v1"
+  name = "gopkg.in/zabawaba99/firego.v1"
+
+[[constraint]]
+  name = "github.com/Rican7/retry"
+  version = "v0.1.0"
+
+[[constraint]]
+  name = "gopkg.in/h2non/filetype.v1"
+  source = "github.com/h2non/filetype"
+  version = "=v1.0.4"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/image"
+
+[[constraint]]
+  name = "gopkg.in/alexcesaro/statsd.v2"
+  version = "2.0.0"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+
+[[constraint]]
+  name = "github.com/dgrijalva/jwt-go"
+  version = "3.2.0"

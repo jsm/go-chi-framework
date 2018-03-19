@@ -1,0 +1,77 @@
+general:
+  branches:
+    ignore:
+      - /release\/.*/
+
+machine:
+  environment:
+    GOROOT: ""
+    GOPATH: "${HOME}/.go_project"
+    PATH: "${GOPATH}/bin:${PATH}"
+    BUILD_PATH: "${GOPATH}/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
+  services:
+    - docker
+
+checkout:
+  post:
+    - git submodule sync
+    - git submodule update --init --recursive
+
+dependencies:
+  pre:
+    - go get github.com/golang/dep/cmd/dep
+    - go get -u github.com/jstemmer/go-junit-report
+  override:
+    - mkdir -p ~/.go_project/src/github.com/${CIRCLE_PROJECT_USERNAME}
+    - ln -s ${HOME}/${CIRCLE_PROJECT_REPONAME} ${BUILD_PATH}
+    - cd $BUILD_PATH && dep ensure
+    - pip install awscli
+
+compile:
+  override:
+    - cd $BUILD_PATH && make fmt
+    - cd $BUILD_PATH && make lint
+    - cd $BUILD_PATH && make vet
+
+test:
+  pre:
+    - sudo service postgresql stop
+    - while lsof -Pi :5432 -sTCP:LISTEN -t; do sleep 1; done
+    - docker run -d -p 6379:6379 redis:3-alpine
+    - docker run -d --name pgsql -e POSTGRES_DB=users -v `pwd`/build/support/migrations/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d -p 5432:5432 mdillon/postgis:9.6-alpine
+    - cd build/support/migrations && docker build --rm=false -t migrations .
+    - docker run -e PG_USERNAME=postgres -e PG_HOST=pgsql -e PG_USERNAME=postgres -e PG_PASSWORD='' --link pgsql:pgsql -v `pwd`/build/support/migrations:/src migrations
+  override:
+    - |
+      mkdir -p ${CIRCLE_TEST_REPORTS}/gotest
+      trap "go-junit-report <${CIRCLE_TEST_REPORTS}/go-test.out > ${CIRCLE_TEST_REPORTS}/gotest/go-test-report.xml" EXIT
+      APP_ENV='test' \
+      ATTACHMENT_DIRECTORY=/tmp \
+      FIREBASE_PROJECT_ID='huddleup-test' \
+      PG_HOST='0.0.0.0' \
+      PG_USERNAME='postgres' \
+      PG_PASSWORD='' \
+      MACHINERY_HOST='redis://localhost:6379' \
+      REDIS_DB='localhost:6379' \
+      TEAM_SETUP_CUTOFF_DATE='2017-12-06T21:00:00Z' \
+      bash -c "go run scripts/seed-db/main.go && (cd test && go test ./unit/... ./integration/...)" | tee ${CIRCLE_TEST_REPORTS}/go-test.out
+
+deployment:
+  api:
+    branch: master
+    commands:
+      - sudo apt-get update && sudo apt-get install jq
+      - |
+        set -e
+        if make deploy-version-check; then
+          parallel -k --lb build/circle-bin.sh ::: api worker
+          $(aws ecr get-login --region us-east-1)
+          (cd ./deploy/api && ./deploy-to-eb.sh $CIRCLE_SHA1)
+          make tag-version
+        fi
+  api-hotfix:
+    branch: deploy/api-hotfix
+    commands:
+      - "parallel -k --lb build/circle-bin.sh ::: api worker"
+      - $(aws ecr get-login --region us-east-1)
+      - cd ./deploy/api && ./deploy-to-eb.sh $CIRCLE_SHA1 hotfix

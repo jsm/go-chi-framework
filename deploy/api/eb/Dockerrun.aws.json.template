@@ -1,0 +1,99 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "api",
+      "image": "996716936584.dkr.ecr.<REGION>.amazonaws.com/backend-api:<TAG>",
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 8080
+        }
+      ],
+      "essential": true,
+      "memoryReservation": "128",
+      "links": ["signalfx:stats"]
+    },
+    {
+      "name": "worker",
+      "image": "996716936584.dkr.ecr.<REGION>.amazonaws.com/backend-worker:<TAG>",
+      "essential": true,
+      "memoryReservation": "256",
+      "links": ["signalfx:stats"]
+    },    
+    {
+      "name": "signalfx",
+      "image": "quay.io/signalfuse/collectd",
+      "environment": [
+        {
+          "name": "DISABLE_CPU",
+          "value": true
+        },
+        {
+          "name": "DISABLE_CPUFREQ",
+          "value": true
+        },
+        {
+          "name": "DISABLE_DISK",
+          "value": true
+        },
+        {
+          "name": "DISABLE_DOCKER",
+          "value": true
+        },
+        {
+          "name": "DISABLE_LOAD",
+          "value": true
+        },
+        {
+          "name": "DISABLE_PROTOCOLS",
+          "value": true
+        },
+        {
+          "name": "DISABLE_AGENT_PROCESS_STATS",
+          "value": true
+        },
+        {
+          "name": "DISABLE_AGENT_PROCESS_STATS",
+          "value": true
+        },
+        {
+          "name": "USE_AWS_UNIQUE_ID_AS_HOSTNAME",
+          "value": true
+        },
+        {
+          "name": "DOG_STATSD_PORT",
+          "value": 8125
+        }
+      ],
+      "essential": true,
+      "memoryReservation": "128",
+      "mountPoints": [
+        {
+          "sourceVolume": "dockersock",
+          "containerPath": "/var/run/docker.sock",
+          "readOnly": true
+        },
+        {
+          "sourceVolume": "hostfs",
+          "containerPath": "/hostfs",
+          "readOnly": true
+        }
+      ]
+    }
+  ],
+  "volumes": [
+    {
+      "host": {
+        "sourcePath": "/var/run/docker.sock"
+      },
+      "name": "dockersock"
+    },
+    {
+      "host": {
+        "sourcePath": "/"
+      },
+      "name": "hostfs"
+    }
+  ]
+}
